@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#121216">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Invaders - Défis Nature</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg-color: #121216;
+            --card-bg: #1e1e24;
+            --accent-green: #00ff66;
+            --accent-blue: #00ccff;
+            --accent-orange: #ff9900;
+            --accent-red: #ff3366;
+            --accent-purple: #b026ff;
+            --text-color: #f0f0f0;
+            --border-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ÉCRAN 1 : PRÉSENTATION */
+        .hero-title {
+            font-size: 2.2rem;
+            text-align: center;
+            color: var(--accent-green);
+            text-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .hero-subtitle {
+            color: #aaa;
+            text-align: center;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .intro-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: #121216;
+            border: none;
+            padding: 16px 28px;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* ÉCRAN 2 : CONFIGURATION */
+        .config-group {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .config-title {
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .option-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        button.opt-btn {
+            flex: 1;
+            background: #2a2a35;
+            color: white;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        button.opt-btn.active {
+            background: var(--accent-green);
+            color: #121216;
+            border-color: var(--accent-green);
+        }
+
+        select.opt-select {
+            width: 100%;
+            background: #2a2a35;
+            color: white;
+            border: 1px solid #444;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .file-label {
+            display: block;
+            text-align: center;
+            background: #2a2a35;
+            color: white;
+            border: 1px dashed var(--accent-blue);
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* ÉCRAN 3 : JEU PLEIN ÉCRAN */
+        .top-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-icon {
+            background: #2a2a35;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .status-bar {
+            width: 100%;
+            text-align: center;
+            background: #1e1e24;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            border-left: 4px solid var(--accent-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+        }
+
+        .game-board {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .player-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-count {
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .card {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 2px solid #333;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .card.turn-owner {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
+
+        .badge-rare {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent-red);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 12px;
+        }
+
+        .card-header {
+            background: #2a2a35;
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .card-id {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        .card-location {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .card-image-container {
+            height: 80px;
+            background: #151518;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-stats {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #25252e;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .stat-row:active:not(.disabled) {
+            background: #32323e;
+            border-color: var(--accent-blue);
+        }
+
+        .stat-row.disabled {
+            opacity: 0.8;
+        }
+
+        .counter-btn {
+            margin-top: 4px;
+            width: 100%;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        #arcade-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #arcade-canvas {
+            background: #000;
+            border: 2px solid var(--accent-green);
+            max-width: 90vw;
+            max-height: 45vh;
+        }
+
+        .arcade-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .arcade-touch-btn {
+            background: #222;
+            color: #fff;
+            border: 2px solid var(--accent-green);
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÉCRAN 1 : PRÉSENTATION -->
+    <div id="screen-1" class="screen">
+        <h1 class="hero-title">SPACE INVADERS<br>DÉFIS NATURE</h1>
+        <p class="hero-subtitle">Bataille Urbaine & Street Art</p>
+
+        <div class="intro-card">
+            <p style="font-size: 2.5rem; margin-bottom: 10px;">👾🃏</p>
+            <p>Affrontez vos adversaires dans des duels de statistiques sur la collection mondiale de Street Art Invader !</p>
+            <br>
+            <p style="color: #aaa; font-size: 0.85rem;">Points, rareté, hauteur, distance... Choisissez judicieusement la caractéristique la plus forte pour capturer les cartes de votre rival.</p>
+        </div>
+
+        <button id="btn-to-config" class="btn-primary">🎮 JOUER AU JEU</button>
+    </div>
+
+    <!-- ÉCRAN 2 : CONFIGURATION -->
+    <div id="screen-2" class="screen hidden">
+        <h2 style="color: var(--accent-blue);">CONFIGURATION</h2>
+
+        <div class="config-group">
+            <div class="config-title">1. Sélection du Deck</div>
+            <div class="option-row">
+                <button id="btn-mode-global" class="opt-btn active">🌍 Défi Mondial</button>
+                <button id="btn-mode-perso" class="opt-btn">📱 Deck Perso</button>
+            </div>
+            <label class="file-label">
+                📥 Importer FlashInvaders (.json)
+                <input type="file" id="file-input" accept=".json">
+            </label>
+        </div>
+
+        <div class="config-group">
+            <div class="config-title">2. Adversaire</div>
+            <div class="option-row">
+                <button id="btn-vs-ia" class="opt-btn active">🤖 Solo vs IA</button>
+                <button id="btn-vs-player" class="opt-btn">👥 2 Joueurs</button>
+            </div>
+        </div>
+
+        <div class="config-group">
+            <div class="config-title">3. Règles de fin de partie</div>
+            <select id="select-end-condition" class="opt-select">
+                <option value="official">📜 Règle Officielle (Totale)</option>
+                <option value="rounds_10">🔢 10 Tours Max</option>
+                <option value="cards_12">🎯 Premier à 12 Cartes</option>
+                <option value="time_3">⏱️ Chrono 3 Minutes</option>
+            </select>
+            <div class="option-row" style="margin-top: 5px;">
+                <button id="btn-toggle-rare" class="opt-btn active">🔴 Règle Rareté : ACTIVE</button>
+            </div>
+        </div>
+
+        <div class="config-group">
+            <div class="config-title">4. Clin d'œil Retro</div>
+            <button id="btn-open-arcade" class="opt-btn" style="border-color: var(--accent-purple); color: #e287ff;">👾 Mode Arcade 1978</button>
+        </div>
+
+        <button id="btn-start-game" class="btn-primary">🚀 LANCER LA PARTIE</button>
+    </div>
+
+    <!-- ÉCRAN 3 : JEU EN PLEIN ÉCRAN -->
+    <div id="screen-3" class="screen hidden">
+        <div class="top-nav">
+            <button id="btn-back-menu" class="btn-icon">⚙️ Config</button>
+            <span style="font-weight: bold; color: var(--accent-green); font-size: 0.9rem;">DÉFIS NATURE</span>
+            <button id="btn-restart" class="btn-icon" style="color: var(--accent-blue);">🔄 Rejouer</button>
+        </div>
+
+        <div id="status-bar" class="status-bar">
+            <span id="status-text">Prêt...</span>
+            <span id="timer-display" style="color: var(--accent-orange);"></span>
+        </div>
+
+        <div class="game-board">
+            <div class="player-area">
+                <div class="card-count" id="p1-count">Joueur 1 : 0 cartes</div>
+                <div id="p1-card-slot" class="card"></div>
+            </div>
+
+            <div class="player-area">
+                <div class="card-count" id="p2-count">Adversaire : 0 cartes</div>
+                <div id="p2-card-slot" class="card"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ARCADE -->
+    <div id="arcade-modal" class="hidden">
+        <h3 style="color: var(--accent-green); margin-bottom: 8px; font-family: monospace;">SPACE INVADERS 1978</h3>
+        <canvas id="arcade-canvas" width="340" height="280"></canvas>
+        <div class="arcade-controls">
+            <button class="arcade-touch-btn" id="btn-move-left">⬅️</button>
+            <button class="arcade-touch-btn" id="btn-shoot" style="border-color: var(--accent-red);">💥 TIR</button>
+            <button class="arcade-touch-btn" id="btn-move-right">➡️</button>
+            <button id="btn-close-arcade" style="background: var(--accent-red); color: white; padding: 10px; border-radius: 8px; border:none;">❌</button>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const screen1 = document.getElementById('screen-1');
+            const screen2 = document.getElementById('screen-2');
+            const screen3 = document.getElementById('screen-3');
+
+            document.getElementById('btn-to-config').onclick = () => {
+                screen1.classList.add('hidden');
+                screen2.classList.remove('hidden');
+            };
+
+            document.getElementById('btn-back-menu').onclick = () => {
+                screen3.classList.add('hidden');
+                screen2.classList.remove('hidden');
+            };
+
+            document.getElementById('btn-start-game').onclick = () => {
+                screen2.classList.add('hidden');
+                screen3.classList.remove('hidden');
+                initGame();
+            };
+
+            const BASE_COLLECTION = [
+                { id: "PA_01", city: "Paris", country: "France", score: 50, rarity: 8, height: 4.5, distParis: 0, year: 1998 },
+                { id: "PA_1420", city: "Paris", country: "France", score: 100, rarity: 10, height: 3.2, distParis: 0, year: 2019 },
+                { id: "NY_01", city: "New York", country: "USA", score: 30, rarity: 5, height: 2.8, distParis: 5837, year: 2000 },
+                { id: "TK_02", city: "Tokyo", country: "Japon", score: 40, rarity: 7, height: 5.0, distParis: 9711, year: 2002 },
+                { id: "MARS_01", city: "Mars", country: "Espace", score: 100, rarity: 10, height: 0.5, distParis: 225000000, year: 2021 },
+                { id: "LDN_05", city: "Londres", country: "Royaume-Uni", score: 20, rarity: 4, height: 3.0, distParis: 344, year: 1999 },
+                { id: "BRU_01", city: "Bruxelles", country: "Belgique", score: 30, rarity: 6, height: 2.5, distParis: 264, year: 2012 },
+                { id: "LA_10", city: "Los Angeles", country: "USA", score: 50, rarity: 9, height: 6.0, distParis: 9100, year: 2004 }
+            ];
+
+            let currentCollection = [...BASE_COLLECTION];
+            let personalDeck = [];
+            let isVsIA = true;
+            let usePersonalDeck = false;
+            let rareRuleEnabled = true;
+
+            let deckP1 = [];
+            let deckP2 = [];
+            let activeTurnP1 = true;
+            let gameActive = false;
+
+            let currentRound = 0;
+            let timerInterval = null;
+            let timeRemaining = 0;
+
+            const statLabels = {
+                score: "Points / Score",
+                rarity: "Rareté (1-10)",
+                height: "Hauteur (m)",
+                distParis: "Distance Paris (km)",
+                year: "Année d'apparition"
+            };
+
+            function initGame() {
+                clearInterval(timerInterval);
+                currentRound = 0;
+                
+                const pool = (usePersonalDeck && personalDeck.length >= 2) ? personalDeck : currentCollection;
+                const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                
+                const mid = Math.ceil(shuffled.length / 2);
+                deckP1 = shuffled.slice(0, mid);
+                deckP2 = shuffled.slice(mid);
+
+                activeTurnP1 = true;
+                gameActive = true;
+
+                setupTimer();
+                updateUI();
+                updateStatus(activeTurnP1 ? "À vous de choisir !" : (isVsIA ? "Tour de l'IA..." : "Tour du Joueur 2 !"));
+
+                if (!activeTurnP1 && isVsIA) {
+                    setTimeout(playIATurn, 1200);
+                }
+            }
+
+            function setupTimer() {
+                const condition = document.getElementById('select-end-condition').value;
+                const timerDisplay = document.getElementById('timer-display');
+
+                if (condition.startsWith('time_')) {
+                    const minutes = parseInt(condition.split('_')[1]);
+                    timeRemaining = minutes * 60;
+                    timerDisplay.textContent = `⏱️ ${formatTime(timeRemaining)}`;
+
+                    timerInterval = setInterval(() => {
+                        if (!gameActive) return;
+                        timeRemaining--;
+                        timerDisplay.textContent = `⏱️ ${formatTime(timeRemaining)}`;
+                        if (timeRemaining <= 0) endGame("⏱️ TEMPS ÉCOULÉ !");
+                    }, 1000);
+                } else if (condition.startsWith('rounds_')) {
+                    timerDisplay.textContent = `Tour 0/${condition.split('_')[1]}`;
+                } else {
+                    timerDisplay.textContent = '';
+                }
+            }
+
+            function formatTime(sec) {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return `${m}:${s < 10 ? '0' : ''}${s}`;
+            }
+
+            function checkEndConditions() {
+                const condition = document.getElementById('select-end-condition').value;
+
+                if (deckP1.length === 0 || deckP2.length === 0) {
+                    endGame(deckP1.length > 0 ? "🎉 Victoire Joueur 1 !" : "❌ Victoire Adversaire !");
+                    return true;
+                }
+
+                if (condition.startsWith('rounds_')) {
+                    const maxRounds = parseInt(condition.split('_')[1]);
+                    document.getElementById('timer-display').textContent = `Tour ${currentRound}/${maxRounds}`;
+                    if (currentRound >= maxRounds) {
+                        endGame("🔢 TOURS ATTEINTS !");
+                        return true;
+                    }
+                } else if (condition.startsWith('cards_')) {
+                    const targetCards = parseInt(condition.split('_')[1]);
+                    if (deckP1.length >= targetCards || deckP2.length >= targetCards) {
+                        endGame(deckP1.length >= targetCards ? "🎯 OBJECTIF (J1) !" : "🎯 OBJECTIF (IA) !");
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            function endGame(reason) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                let winner = "";
+                if (deckP1.length > deckP2.length) winner = " 🏆 Victoire J1 !";
+                else if (deckP2.length > deckP1.length) winner = ` 🏆 Victoire ${isVsIA ? 'IA' : 'J2'} !`;
+                else winner = " 🤝 Égalité !";
+
+                updateStatus(`${reason} - ${winner}`);
+            }
+
+            function updateUI() {
+                document.getElementById('p1-count').textContent = `Joueur 1 : ${deckP1.length} cartes`;
+                document.getElementById('p2-count').textContent = `${isVsIA ? 'IA' : 'Joueur 2'} : ${deckP2.length} cartes`;
+
+                renderCard(deckP1[0], 'p1-card-slot', activeTurnP1 && gameActive, false, true);
+                renderCard(deckP2[0], 'p2-card-slot', !activeTurnP1 && !isVsIA && gameActive, isVsIA && gameActive, false);
+            }
+
+            function renderCard(card, targetId, canInteract, hideStats = false, isP1 = true) {
+                const container = document.getElementById(targetId);
+                if (!card) {
+                    container.innerHTML = `<div style="padding:20px; text-align:center; color:#666;">Plus de cartes</div>`;
+                    return;
+                }
+
+                const isRare = card.rarity >= 8;
+                const canCounter = rareRuleEnabled && isRare && !canInteract && gameActive && ((isP1 && !activeTurnP1) || (!isP1 && activeTurnP1));
+
+                container.className = `card ${canInteract ? 'turn-owner' : ''}`;
+                let statsHTML = '';
+
+                for (const [key, label] of Object.entries(statLabels)) {
+                    if (hideStats) {
+                        statsHTML += `
+                            <div class="stat-row disabled">
+                                <span style="color:#aaa; font-size:0.8rem;">${label}</span>
+                                <span style="color: var(--accent-orange); font-weight:bold;">?</span>
+                            </div>
+                        `;
+                    } else {
+                        statsHTML += `
+                            <div class="stat-row ${canInteract ? '' : 'disabled'}" data-key="${key}">
+                                <span style="color:#aaa; font-size:0.8rem;">${label}</span>
+                                <span style="color:#fff; font-weight:bold;">${card[key]}</span>
+                            </div>
+                        `;
+                    }
+                }
+
+                container.innerHTML = `
+                    ${isRare ? '<div class="badge-rare">🔴 Rare</div>' : ''}
+                    <div class="card-header">
+                        <div class="card-id">${card.id}</div>
+                        <div class="card-location">${card.city}, ${card.country}</div>
+                    </div>
+                    <div class="card-image-container">
+                        <span style="font-size:2rem;">👾</span>
+                    </div>
+                    <div class="card-stats">
+                        ${statsHTML}
+                        ${canCounter ? `<button class="counter-btn" id="counter-btn-act">🛡️ Contrer & Attaquer !</button>` : ''}
+                    </div>
+                `;
+
+                if (canInteract) {
+                    container.querySelectorAll('.stat-row').forEach(row => {
+                        row.onclick = () => selectStat(row.getAttribute('data-key'));
+                    });
+                }
+
+                if (canCounter) {
+                    const cBtn = container.querySelector('#counter-btn-act');
+                    if (cBtn) cBtn.onclick = () => triggerCounter(isP1);
+                }
+            }
+
+            function triggerCounter(isP1) {
+                activeTurnP1 = isP1;
+                updateStatus(`🔴 RARE ! ${isP1 ? 'Joueur 1' : 'Adversaire'} contre !`);
+                updateUI();
+            }
+
+            function selectStat(statKey) {
+                if (!gameActive) return;
+
+                currentRound++;
+                const cardP1 = deckP1[0];
+                const cardP2 = deckP2[0];
+
+                let val1 = cardP1[statKey];
+                let val2 = cardP2[statKey];
+
+                let p1Wins = val1 > val2;
+                let draw = val1 === val2;
+
+                if (statKey === 'distParis') p1Wins = val1 < val2;
+
+                let msg = `[T${currentRound}] ${cardP1.id} vs ${cardP2.id} -> `;
+
+                if (draw) {
+                    msg += "Égalité !";
+                    deckP1.push(deckP1.shift());
+                    deckP2.push(deckP2.shift());
+                } else if (p1Wins) {
+                    msg += "J1 gagne !";
+                    deckP1.push(deckP1.shift(), deckP2.shift());
+                    activeTurnP1 = true;
+                } else {
+                    msg += `${isVsIA ? 'L\'IA' : 'J2'} gagne !`;
+                    deckP2.push(deckP2.shift(), deckP1.shift());
+                    activeTurnP1 = false;
+                }
+
+                updateStatus(msg);
+
+                if (checkEndConditions()) {
+                    updateUI();
+                    return;
+                }
+
+                updateUI();
+
+                if (gameActive && !activeTurnP1 && isVsIA) {
+                    setTimeout(playIATurn, 1800);
+                }
+            }
+
+            function playIATurn() {
+                if (!gameActive || activeTurnP1) return;
+
+                if (rareRuleEnabled && deckP2[0].rarity >= 8 && Math.random() > 0.5) {
+                    updateStatus("🔴 L'IA active son pouvoir Rare !");
+                    activeTurnP1 = false;
+                }
+
+                const keys = Object.keys(statLabels);
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                updateStatus(`L'IA choisit : ${statLabels[randomKey]}`);
+                setTimeout(() => selectStat(randomKey), 1000);
+            }
+
+            function updateStatus(text) {
+                document.getElementById('status-text').textContent = text;
+            }
+
+            // ARCADE
+            let arcadeLoop = null;
+            let canvas = document.getElementById('arcade-canvas');
+            let ctx = canvas.getContext('2d');
+            let player = { x: 155, y: 250, w: 25, h: 12 };
+            let bullets = [];
+            let invaders = [];
+            let arcadeScore = 0;
+
+            function startArcadeGame() {
+                document.getElementById('arcade-modal').classList.remove('hidden');
+                arcadeScore = 0;
+                player.x = 155;
+                bullets = [];
+                invaders = [];
+
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 6; c++) {
+                        invaders.push({ x: 35 + c * 45, y: 30 + r * 28, w: 20, h: 15, alive: true });
+                    }
+                }
+
+                if (arcadeLoop) cancelAnimationFrame(arcadeLoop);
+                updateArcade();
+            }
+
+            function shootBullet() {
+                if (bullets.length < 3) {
+                    bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 8 });
+                }
+            }
+
+            function updateArcade() {
+                bullets.forEach((b, index) => {
+                    b.y -= 6;
+                    if (b.y < 0) bullets.splice(index, 1);
+                });
+
+                let aliveCount = 0;
+                invaders.forEach(inv => {
+                    if (!inv.alive) return;
+                    aliveCount++;
+                    bullets.forEach((b, bIdx) => {
+                        if (b.x < inv.x + inv.w && b.x + b.w > inv.x && b.y < inv.y + inv.h && b.y + b.h > inv.y) {
+                            inv.alive = false;
+                            bullets.splice(bIdx, 1);
+                            arcadeScore += 100;
+                        }
+                    });
+                });
+
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#00ff66';
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                ctx.fillStyle = '#ff9900';
+                bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+                ctx.fillStyle = '#ff3366';
+                invaders.forEach(inv => {
+                    if (inv.alive) ctx.fillRect(inv.x, inv.y, inv.w, inv.h);
+                });
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px monospace';
+                ctx.fillText(`SCORE: ${arcadeScore}`, 10, 20);
+
+                if (aliveCount === 0) {
+                    ctx.fillStyle = '#00ff66';
+                    ctx.font = '20px monospace';
+                    ctx.fillText("VICTOIRE !", 110, 140);
+                } else {
+                    arcadeLoop = requestAnimationFrame(updateArcade);
+                }
+            }
+
+            document.getElementById('btn-move-left').onclick = () => { player.x = Math.max(10, player.x - 20); };
+            document.getElementById('btn-move-right').onclick = () => { player.x = Math.min(canvas.width - player.w - 10, player.x + 20); };
+            document.getElementById('btn-shoot').onclick = shootBullet;
+
+            document.getElementById('btn-open-arcade').onclick = startArcadeGame;
+            document.getElementById('btn-close-arcade').onclick = () => {
+                document.getElementById('arcade-modal').classList.add('hidden');
+            };
+
+            document.getElementById('btn-restart').onclick = initGame;
+
+            document.getElementById('btn-toggle-rare').onclick = (e) => {
+                rareRuleEnabled = !rareRuleEnabled;
+                e.target.classList.toggle('active', rareRuleEnabled);
+                e.target.textContent = rareRuleEnabled ? "🔴 Règle Rareté : ACTIVE" : "⚪ Règle Rareté : INACTIVE";
+            };
+
+            document.getElementById('btn-vs-ia').onclick = (e) => {
+                isVsIA = true;
+                e.target.classList.add('active');
+                document.getElementById('btn-vs-player').classList.remove('active');
+            };
+
+            document.getElementById('btn-vs-player').onclick = (e) => {
+                isVsIA = false;
+                e.target.classList.add('active');
+                document.getElementById('btn-vs-ia').classList.remove('active');
+            };
+
+            document.getElementById('btn-mode-global').onclick = (e) => {
+                usePersonalDeck = false;
+                e.target.classList.add('active');
+                document.getElementById('btn-mode-perso').classList.remove('active');
+            };
+
+            document.getElementById('btn-mode-perso').onclick = (e) => {
+                if (personalDeck.length < 2) {
+                    alert("Importez d'abord un fichier JSON !");
+                    return;
+                }
+                usePersonalDeck = true;
+                e.target.classList.add('active');
+                document.getElementById('btn-mode-global').classList.remove('active');
+            };
+
+            document.getElementById('file-input').onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (Array.isArray(data)) {
+                            personalDeck = data.map((item, idx) => ({
+                                id: item.name || item.id || `CUSTOM_${idx+1}`,
+                                city: item.city || "Inconnue",
+                                country: item.country || "Monde",
+                                score: item.points || item.score || 30,
+                                rarity: item.rarity || 5,
+                                height: item.height || 3.0,
+                                distParis: item.distParis || 100,
+                                year: item.year || 2020
+                            }));
+                            alert(`${personalDeck.length} Invaders importés !`);
+                            document.getElementById('btn-mode-perso').click();
+                        }
+                    } catch (err) {
+                        alert("Fichier JSON invalide.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+        });
+    </script>
+</body>
+</html>
